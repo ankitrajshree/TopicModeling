@@ -78,3 +78,18 @@ def build_model(dictionary, corpus, n_topics, lemmatized_notes):
 
 
 # Select optimal number of topics
+def select_optimal_model_topics(notes):
+    strt = 10
+    end = 40
+    lemmatized_notes, dict, corpus, = build_dictionary_corpus(notes)
+    model_mallet, coh_val_lda_mallet, model_lda, coh_val_lda = build_model(dict, corpus, strt, end, lemmatized_notes)
+    max_coh_idx_lda_mal = coh_val_lda_mallet.index(max(coh_val_lda_mallet))
+    final_model = model_mallet[max_coh_idx_lda_mal]
+    final_topic_data_df = format_topics_sentences(final_model, corpus, notes)
+    return final_topic_data_df
+
+
+# Driver method to get topics out of the notes and returns a dataframe with topic
+def get_topics_from_notes(notes):
+    final_df = select_optimal_model_topics(notes)
+    return final_df
