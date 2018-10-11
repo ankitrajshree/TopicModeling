@@ -77,6 +77,25 @@ def build_model(dictionary, corpus, n_topics, lemmatized_notes):
     return model_mallet, coh_val_lda_mallet, model_lda, coh_val_lda
 
 
+# Get the dominant topic in each note
+def format_topics_sentences(model, corpus, notes):
+    # Init output
+    sent_topics_df = pd.DataFrame()
+
+    # Get main topic in each document
+    for i, row in enumerate(model[corpus]):
+        row = sorted(row, key=lambda x: (x[1]), reverse=True)
+        # Get the Dominant topic, Perc Contribution and Keywords for each document
+        for j, (topic_num, prop_topic) in enumerate(row):
+            if j == 0:  # => dominant topic
+                wp = model.show_topic(topic_num)
+                topic_keywords = ", ".join([word for word, prop in wp])
+                sent_topics_df = sent_topics_df.append(pd.Series([int(topic_num), round(prop_topic,4), topic_keywords]), ignore_index=True)
+            else:
+                break
+    sent_topics_df.columns = ['Dominant_Topic', 'Perc_Contribution', 'Topic_Keywords']
+
+
 # Select optimal number of topics
 def select_optimal_model_topics(notes):
     strt = 10
